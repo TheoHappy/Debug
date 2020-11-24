@@ -1,0 +1,57 @@
+public class Deadlock {
+    private static int sleepMillis=5;
+    private final Object lock1 = new Object();
+    private final Object lock2 = new Object();
+
+    public static void main(String[] args) {
+
+        Deadlock test = new Deadlock();
+        test.doTest();
+    }
+
+    private void doTest() {
+        Thread t1 = new Thread(new Runnable() {
+            public void run() {
+                System.out.println("Thread 1");
+                lock12();
+
+            }
+        });
+        Thread t2 = new Thread(new Runnable() {
+            public void run() {
+                System.out.println("Thread 2");
+                lock21();
+
+            }
+        });
+        t1.start();
+        t2.start();
+        System.out.println("Main thread");
+    }
+
+    private void lock12() {
+        synchronized (lock1) {
+            sleep();
+            synchronized (lock2) {
+                sleep();
+            }
+        }
+    }
+
+    private void lock21() {
+        synchronized (lock1) {
+            sleep();
+            synchronized (lock1) {
+                sleep();
+            }
+        }
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(sleepMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
